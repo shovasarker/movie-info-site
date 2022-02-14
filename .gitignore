@@ -6,6 +6,7 @@
 .pnp.js
 
 #ENVIRONMENT-FILES
+.env
 .env*.local
 
 # testing
