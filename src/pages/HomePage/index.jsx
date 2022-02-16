@@ -6,12 +6,16 @@ const HomePage = () => {
   const [movies, setMovies] = useState([])
   const [selectedShowType, setSelectedShowType] = useState('movie')
   const [selectedType, setSelectedType] = useState('popular')
-  const type = selectedType.split('_').join(' ')
-  const title = `${type} ${
-    selectedShowType === 'movie'
-      ? 'movies'
-      : selectedShowType === 'tv' && 'tv shows'
-  }`
+  const getTitle = () => {
+    const type = selectedType.split('_').join(' ')
+    const title = `${type} ${
+      selectedShowType === 'movie'
+        ? 'movies'
+        : selectedShowType === 'tv' && 'tv shows'
+    }`
+
+    return title.toUpperCase()
+  }
   useEffect(() => {
     setSelectedType('popular')
   }, [selectedShowType])
@@ -40,7 +44,7 @@ const HomePage = () => {
         selectedShowType={selectedShowType}
         setSelectedShowType={setSelectedShowType}
       />
-      <CardsContainer title={title.toUpperCase()} results={movies} />
+      <CardsContainer title={getTitle()} results={movies} />
     </section>
   )
 }
