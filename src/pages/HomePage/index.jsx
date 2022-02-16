@@ -1,50 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  selectCategoryType,
+  selectIsProgramsListLoaded,
+  selectProgramsType,
+} from '../../redux/programs/programs.selector'
 import CardsContainer from '../../components/CardsContainer'
 import FilteringSelectors from '../../components/FilteringSelectors'
+import { setPrograms } from '../../redux/programs/programs.action'
 
 const HomePage = () => {
-  const [movies, setMovies] = useState([])
-  const [selectedShowType, setSelectedShowType] = useState('movie')
-  const [selectedType, setSelectedType] = useState('popular')
-  const getTitle = () => {
-    const type = selectedType.split('_').join(' ')
-    const title = `${type} ${
-      selectedShowType === 'movie'
-        ? 'movies'
-        : selectedShowType === 'tv' && 'tv shows'
-    }`
-
-    return title.toUpperCase()
-  }
-  useEffect(() => {
-    setSelectedType('popular')
-  }, [selectedShowType])
-
+  const dispatch = useDispatch()
+  const categoryType = useSelector(selectCategoryType)
+  const programsType = useSelector(selectProgramsType)
+  const isProgramsLoaded = useSelector(selectIsProgramsListLoaded)
   useEffect(() => {
     const fetchMovies = async () => {
       const API_KEY = process.env.REACT_APP_API_KEY
       const API_URL = 'https://api.themoviedb.org/3'
       try {
-        const FETCH_URL = `${API_URL}/${selectedShowType}/${selectedType}?api_key=${API_KEY}&language=en-US&page=1`
+        const FETCH_URL = `${API_URL}/${programsType}/${categoryType}?api_key=${API_KEY}&language=en-US&page=1`
         const res = await fetch(FETCH_URL)
         const data = await res.json()
-        console.log(data)
-        setMovies(data.results)
+        dispatch(setPrograms(data.results))
       } catch (error) {
         console.log(error)
       }
     }
     fetchMovies()
-  }, [selectedType, selectedShowType])
+  }, [categoryType, programsType, dispatch])
   return (
     <section>
-      <FilteringSelectors
-        selectedType={selectedType}
-        setSelectedType={setSelectedType}
-        selectedShowType={selectedShowType}
-        setSelectedShowType={setSelectedShowType}
-      />
-      <CardsContainer title={getTitle()} results={movies} />
+      <FilteringSelectors />
+      {isProgramsLoaded ? (
+        <CardsContainer />
+      ) : (
+        <div className='text-lg text-center'>Loading...</div>
+      )}
     </section>
   )
 }
