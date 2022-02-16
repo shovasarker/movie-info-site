@@ -8,6 +8,7 @@ import {
 import CardsContainer from '../../components/CardsContainer'
 import FilteringSelectors from '../../components/FilteringSelectors'
 import { setPrograms } from '../../redux/programs/programs.action'
+import { fetchCategorizedPrograms } from '../../utilities/api'
 
 const HomePage = () => {
   const dispatch = useDispatch()
@@ -15,19 +16,15 @@ const HomePage = () => {
   const programsType = useSelector(selectProgramsType)
   const isProgramsLoaded = useSelector(selectIsProgramsListLoaded)
   useEffect(() => {
-    const fetchMovies = async () => {
-      const API_KEY = process.env.REACT_APP_API_KEY
-      const API_URL = 'https://api.themoviedb.org/3'
-      try {
-        const FETCH_URL = `${API_URL}/${programsType}/${categoryType}?api_key=${API_KEY}&language=en-US&page=1`
-        const res = await fetch(FETCH_URL)
-        const data = await res.json()
-        dispatch(setPrograms(data.results))
-      } catch (error) {
-        console.log(error)
-      }
+    const fetchPrograms = async () => {
+      const results = await fetchCategorizedPrograms(
+        categoryType,
+        programsType,
+        1
+      )
+      dispatch(setPrograms(results))
     }
-    fetchMovies()
+    fetchPrograms()
   }, [categoryType, programsType, dispatch])
   return (
     <section>
